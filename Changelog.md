@@ -1,6 +1,8 @@
 ### 0.8.14 (unreleased)
 
 Language Features:
+* General: Add the event selector field.
+* General: Errors and Events are visible via other contracts.
 
 
 Compiler Features:

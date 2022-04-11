@@ -43,6 +43,11 @@
 #include <string>
 #include <utility>
 
+namespace solidity::langutil
+{
+class ErrorReporter;
+}
+
 namespace solidity::frontend
 {
 
