@@ -1068,8 +1068,8 @@ class SolidityLSPTestSuite: # {{{
                     # pragma pylint: disable=broad-except
                     except Exception as e:
                         print(e)
-                        if ret := self.user_interaction_failed_autoupdate(test):
-                            return ret
+                        if self.user_interaction_failed_autoupdate(test):
+                            return True
             elif user_response == 's':
                 return True
             elif user_response == 'r':
