@@ -8,7 +8,7 @@ import subprocess
 import sys
 import traceback
 import re
-import tty
+
 import functools
 from collections import namedtuple
 from copy import deepcopy
@@ -20,6 +20,22 @@ from enum import Enum, auto
 
 import colorama # Enables the use of SGR & CUP terminal VT sequences on Windows.
 from deepdiff import DeepDiff
+
+def getCharFromStdin():
+    """
+    Gets a single character from stdin without line-buffering.
+    """
+    import os
+    if os.name == 'nt':
+        import msvcrt
+        return msvcrt.getch().decode("utf-8")
+    else:
+        # Turn off user input buffering so we get the input immediately,
+        # not only after a line break
+        import tty
+        tty.setcbreak(sys.stdin.fileno())
+        return sys.stdin.buffer.read(1)
+
 
 """
 Named tuple that holds various regexes used to parse the test specification.
@@ -100,7 +116,6 @@ def prepend_comments(sequence):
 class BadHeader(Exception):
     def __init__(self, msg: str):
         super().__init__("Bad header: " + msg)
-
 
 class JsonRpcProcess:
     exe_path: str
@@ -589,7 +604,7 @@ class FileTestRunner:
 
         while True:
             print("(u)pdate/(r)etry/(i)gnore?")
-            user_response = sys.stdin.read(1)
+            user_response = getCharFromStdin()
             if user_response == "i":
                 return self.TestResult.SuccessOrIgnored
 
@@ -1059,7 +1074,7 @@ class SolidityLSPTestSuite: # {{{
         """
         while True:
             print("(u)pdate/(r)etry/(s)kip file?")
-            user_response = sys.stdin.read(1)
+            user_response = getCharFromStdin()
             if user_response == "u":
                 while True:
                     try:
@@ -1077,7 +1092,7 @@ class SolidityLSPTestSuite: # {{{
 
     def user_interaction_failed_autoupdate(self, test):
         print("(e)dit/(r)etry/(s)kip file?")
-        user_response = sys.stdin.read(1)
+        user_response = getCharFromStdin()
         if user_response == "r":
             print("retrying...")
             # pragma pylint: disable=no-member
@@ -1653,10 +1668,8 @@ class SolidityLSPTestSuite: # {{{
     # }}}
     # }}}
 
+
 if __name__ == "__main__":
-    # Turn off user input buffering so we get the input immediately,
-    # not only after a line break
-    tty.setcbreak(sys.stdin.fileno())
     suite = SolidityLSPTestSuite()
     exit_code = suite.main()
     sys.exit(exit_code)
