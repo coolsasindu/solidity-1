@@ -182,6 +182,8 @@ void IOStreamTransport::flushOutput()
 // {{{ StdioTransport
 StdioTransport::StdioTransport()
 {
+	// Attempt to change the modes of stdout from text to binary.
+	setmode(fileno(stdout), O_BINARY);
 }
 
 bool StdioTransport::closed() const noexcept
