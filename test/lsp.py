@@ -21,6 +21,16 @@ from enum import Enum, auto
 import colorama # Enables the use of SGR & CUP terminal VT sequences on Windows.
 from deepdiff import DeepDiff
 
+def escape_string(text: str) -> str:
+    """
+    Trivially escapes given input string's \r \n and \\.
+    """
+    return text.translate(str.maketrans({
+        "\r": r"\r",
+        "\n": r"\n",
+        "\\": r"\\"
+    }))
+
 def getCharFromStdin():
     """
     Gets a single character from stdin without line-buffering.
@@ -159,6 +169,8 @@ class JsonRpcProcess:
                 # server quit
                 return None
             line = line.decode("utf-8")
+            if self.trace_io:
+                print("Received header-line: {}".format(escape_string(line)))
             if not line.endswith("\r\n"):
                 raise BadHeader("missing newline")
             # Safely remove the "\r\n".
