@@ -814,7 +814,7 @@ class SolidityLSPTestSuite: # {{{
         in the test path (test/libsolidity/lsp).
         """
         with open(self.get_test_file_path(test_case_name), mode="r", encoding="utf-8", newline='') as f:
-            return f.read()
+            return f.read().replace("\r\n", "\n")
 
     def require_params_for_method(self, method_name: str, message: dict) -> Any:
         """
