@@ -30,9 +30,10 @@
 #include <sstream>
 #include <string>
 
+#include <fcntl.h>
+
 #if defined(_WIN32)
 #include <io.h>
-#include <fcntl.h>
 #endif
 
 using namespace std;
