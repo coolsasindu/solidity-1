@@ -37,6 +37,7 @@ def getCharFromStdin():
     """
     import os
     if os.name == 'nt':
+        # pragma pylint: disable=import-error
         import msvcrt
         return msvcrt.getch().decode("utf-8")
     else:
