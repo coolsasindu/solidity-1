@@ -2,24 +2,29 @@
 # pragma pylint: disable=too-many-lines
 import argparse
 import fnmatch
+import functools
 import json
 import os
+import re
 import subprocess
 import sys
 import traceback
-import re
-
-import functools
 from collections import namedtuple
 from copy import deepcopy
+from enum import Enum, auto
+from itertools import islice
 from pathlib import PurePath
 from typing import Any, List, Optional, Tuple, Union
-from itertools import islice
 
-from enum import Enum, auto
-
-import colorama # Enables the use of SGR & CUP terminal VT sequences on Windows.
+import colorama  # Enables the use of SGR & CUP terminal VT sequences on Windows.
 from deepdiff import DeepDiff
+
+if os.name == 'nt':
+    # pragma pylint: disable=import-error
+    import msvcrt
+else:
+    import tty
+
 
 def escape_string(text: str) -> str:
     """
@@ -31,19 +36,17 @@ def escape_string(text: str) -> str:
         "\\": r"\\"
     }))
 
+
 def getCharFromStdin():
     """
     Gets a single character from stdin without line-buffering.
     """
-    import os
     if os.name == 'nt':
         # pragma pylint: disable=import-error
-        import msvcrt
         return msvcrt.getch().decode("utf-8")
     else:
         # Turn off user input buffering so we get the input immediately,
         # not only after a line break
-        import tty
         tty.setcbreak(sys.stdin.fileno())
         return sys.stdin.buffer.read(1)
 
@@ -171,7 +174,7 @@ class JsonRpcProcess:
                 return None
             line = line.decode("utf-8")
             if self.trace_io:
-                print("Received header-line: {}".format(escape_string(line)))
+                print(f"Received header-line: {escape_string(line)}")
             if not line.endswith("\r\n"):
                 raise BadHeader("missing newline")
             # Safely remove the "\r\n".
